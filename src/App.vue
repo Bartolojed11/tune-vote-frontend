@@ -1,18 +1,26 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { useAuthStore } from './stores/authStore'
+import router from './router'
+
+const store = useAuthStore()
+// TODO: Do better ui/ux
+const handleLogout = async () => {
+  await store.logout()
+  router.push('/login')
+}
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/">Voting</RouterLink>
+        <RouterLink v-if="!store.isAuthenticated" to="/register">Register</RouterLink>
+        <RouterLink v-if="!store.isAuthenticated" to="/login">Login</RouterLink>
+        <button v-if="store.isAuthenticated" type="button" class="logout-btn" @click="handleLogout">
+          Logout
+        </button>
       </nav>
     </div>
   </header>
@@ -26,16 +34,13 @@ header {
   max-height: 100vh;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
 nav {
   width: 100%;
   font-size: 12px;
   text-align: center;
   margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
 }
 
 nav a.router-link-exact-active {
@@ -70,7 +75,7 @@ nav a:first-of-type {
   header .wrapper {
     display: flex;
     place-items: flex-start;
-    flex-wrap: wrap;
+    flex-wrap: no-wrap;
   }
 
   nav {
@@ -81,5 +86,11 @@ nav a:first-of-type {
     padding: 1rem 0;
     margin-top: 1rem;
   }
+}
+
+.logout-btn {
+  background-color: unset;
+  color: var(--color-text);
+  border: unset;
 }
 </style>
